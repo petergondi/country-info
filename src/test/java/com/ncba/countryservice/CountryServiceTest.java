@@ -9,7 +9,8 @@ import com.ncba.countryservice.service.SoapClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,16 +32,15 @@ class CountryServiceTest {
 
     @BeforeEach
     void setUp() {
-        sampleCountry = CountryInfo.builder()
-                .countryName("Kenya")
-                .isoCode("KE")
-                .capitalCity("Nairobi")
-                .phoneCode("+254")
-                .continentCode("AF")
-                .currencyIsoCode("KES")
-                .currencyName("Kenyan Shilling")
-                .countryFlag("https://example.com/ke.png")
-                .build();
+        sampleCountry = new CountryInfo();
+        sampleCountry.setCountryName("Kenya");
+        sampleCountry.setIsoCode("KE");
+        sampleCountry.setCapitalCity("Nairobi");
+        sampleCountry.setPhoneCode("+254");
+        sampleCountry.setContinentCode("AF");
+        sampleCountry.setCurrencyIsoCode("KES");
+        sampleCountry.setCurrencyName("Kenyan Shilling");
+        sampleCountry.setCountryFlag("https://example.com/ke.png");
     }
 
     @Test
