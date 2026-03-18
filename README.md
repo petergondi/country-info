@@ -6,14 +6,14 @@ NCBA Channel Developer Case Study — A Spring Boot REST API that integrates wit
 
 ## Tech Stack
 
-| Layer       | Technology             |
-|-------------|------------------------|
-| Framework   | Spring Boot 3.2 (Java 17) |
-| Database    | MySQL 8.0              |
+| Layer       | Technology                  |
+|-------------|-----------------------------|
+| Framework   | Spring Boot 3.3.5 (Java 21) |
+| Database    | MySQL 8.0                   |
 | ORM         | Spring Data JPA / Hibernate |
-| SOAP Client | Spring Web Services    |
-| Build Tool  | Maven                  |
-| Container   | Docker + Docker Compose |
+| SOAP Client | Spring Web Services         |
+| Build Tool  | Maven                       |
+| Container   | Docker + Docker Compose     |
 
 ---
 
