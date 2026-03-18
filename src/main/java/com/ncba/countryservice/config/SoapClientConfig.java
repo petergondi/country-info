@@ -1,6 +1,7 @@
 package com.ncba.countryservice.config;
 
 import com.ncba.countryservice.service.SoapClientService;
+import com.ncba.countryservice.service.SoapClientServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,7 @@ public class SoapClientConfig {
 
     @Bean
     public SoapClientService soapClientService(Jaxb2Marshaller marshaller) {
-        SoapClientService client = new SoapClientService();
+        SoapClientServiceImpl client = new SoapClientServiceImpl();
         client.setDefaultUri(endpointUrl);
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);

@@ -4,7 +4,7 @@ import com.ncba.countryservice.dto.CountryDTOs.*;
 import com.ncba.countryservice.exception.CountryNotFoundException;
 import com.ncba.countryservice.model.CountryInfo;
 import com.ncba.countryservice.repository.CountryInfoRepository;
-import com.ncba.countryservice.service.CountryService;
+import com.ncba.countryservice.service.CountryServiceImpl;
 import com.ncba.countryservice.service.SoapClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class CountryServiceTest {
 
     @Mock private CountryInfoRepository repository;
     @Mock private SoapClientService soapClientService;
-    @InjectMocks private CountryService countryService;
+    @InjectMocks private CountryServiceImpl countryService;
 
     private CountryInfo sampleCountry;
 
