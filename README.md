@@ -89,12 +89,49 @@ FLUSH PRIVILEGES;
 ```
 
 ### 2. Configure application
-Edit `src/main/resources/application.properties`:
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/country_db
-spring.datasource.username=appuser
-spring.datasource.password=apppassword
+
+Create the properties file manually since it is not included in the repository:
+
+```bash
+touch src/main/resources/application.properties
 ```
+
+Then open the file and paste in the following content, replacing the database username and password with your own:
+
+```properties
+# Application
+spring.application.name=country-service
+server.port=8080
+
+# MySQL Database
+spring.datasource.url=jdbc:mysql://localhost:3306/country_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA / Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.jpa.properties.hibernate.format_sql=true
+
+# SOAP
+soap.wsdl.url=http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL
+soap.endpoint.url=http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso
+
+# Logging
+logging.level.com.ncba.countryservice=DEBUG
+logging.level.org.springframework.ws=DEBUG
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+logging.file.name=logs/country-service.log
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+
+# Actuator
+management.endpoints.web.exposure.include=health,info,metrics
+management.endpoint.health.show-details=always
+```
+
+> **Note:** `application.properties` is excluded from version control via `.gitignore`. You must create it manually every time you clone the repository.
 
 Or pass as environment variables:
 ```bash
