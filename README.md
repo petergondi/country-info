@@ -42,7 +42,7 @@ POST /api/countries { "name": "kenya" }
 
 ## Prerequisites
 
-- Java 17+
+- Java 21
 - Maven 3.8+
 - MySQL 8.0 (local) **OR** Docker + Docker Compose
 
