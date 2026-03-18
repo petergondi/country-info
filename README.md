@@ -465,7 +465,7 @@ The current implementation makes 2 live SOAP calls on every new country request 
 - **Double DB call** — fixed by storing the result of `findByCountryNameIgnoreCase` in an `Optional` and reusing it, eliminating the redundant second query.
 - **Repeated SOAP calls** — for subsequent requests for a country not yet in the database, the SOAP service is still called every time. In a production environment this introduces latency and a hard dependency on the external SOAP service availability.
 
-The recommended next improvement is to introduce Redis caching using Spring Cache so that SOAP responses are stored after the first call and reused on subsequent requests without hitting the external service again.
+The recommended next improvement is to introduce Redis caching using Spring Cache so that the full country response is cached after the first request and returned directly on subsequent requests without touching the database or the SOAP service.
 
 **How it would work:**
 
@@ -473,33 +473,29 @@ The recommended next improvement is to introduce Redis caching using Spring Cach
 POST /api/countries { "name": "Kenya" }
         │
         ▼
-  Check DB (single query) → already saved? → return immediately (no SOAP)
-        │
-        ▼ (first time only)
-  Check Redis → ISO code cached? → skip SOAP call 1
+  Check Redis → cached? → return immediately (no DB, no SOAP)
         │
         ▼ (cache miss only)
-  SOAP: CountryISOCode("Kenya") → "KE" → store in Redis (TTL 24h)
+  Check DB → already saved? → store in Redis → return response
+        │
+        ▼ (not in DB)
+  SOAP: CountryISOCode("Kenya") → "KE"
         │
         ▼
-  Check Redis → full info cached? → skip SOAP call 2
-        │
-        ▼ (cache miss only)
-  SOAP: FullCountryInfo("KE") → store in Redis (TTL 24h)
+  SOAP: FullCountryInfo("KE") → { capital, currency, ... }
         │
         ▼
-  Save to DB → return response
+  Save to DB → store in Redis (TTL 24h) → return response
 ```
 
-**Key annotations that would be added to `SoapClientServiceImpl`:**
+**Key annotation that would be added to `CountryServiceImpl`:**
 
 ```java
-@Cacheable(value = "isoCode", key = "#countryName")
-public String getCountryIsoCode(String countryName) { ... }
-
-@Cacheable(value = "countryInfo", key = "#isoCode")
-public Map<String, String> getFullCountryInfo(String isoCode) { ... }
+@Cacheable(value = "countries", key = "#rawName.toLowerCase()")
+public CountryResponse fetchAndSaveCountry(String rawName) { ... }
 ```
+
+This means on the first request Spring executes the full method — checks DB, calls SOAP if needed, saves to DB — then stores the result in Redis. On every subsequent request for the same country name, Spring returns the cached response immediately without entering the method at all.
 
 **Why Redis over simple in-memory cache:**
 
