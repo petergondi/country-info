@@ -431,7 +431,7 @@ country-service/
 │   │   ├── exception/         # Custom exceptions + global handler
 │   │   └── config/            # SOAP/marshaller config
 │   └── resources/
-│       ├── application.properties.template  ← committed to git
+│  
 │       └── application.properties           ← NOT committed (create manually)
 ├── Dockerfile
 ├── docker-compose.yml
