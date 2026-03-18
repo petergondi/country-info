@@ -1,0 +1,330 @@
+{
+  "info": {
+    "name": "Country Service API",
+    "description": "NCBA Channel Developer Case Study - Country Info Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Countries",
+      "item": [
+        {
+          "name": "Fetch and Save Country",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kenya\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries"]
+            },
+            "description": "Fetches country info from SOAP API and saves to database. Converts name to sentence case automatically."
+          },
+          "response": [
+            {
+              "name": "201 - Country Saved",
+              "status": "Created",
+              "code": 201,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Country fetched and saved successfully\",\n  \"data\": {\n    \"id\": 1,\n    \"countryName\": \"Kenya\",\n    \"isoCode\": \"KE\",\n    \"capitalCity\": \"Nairobi\",\n    \"phoneCode\": \"254\",\n    \"continentCode\": \"AF\",\n    \"currencyIsoCode\": \"KES\",\n    \"currencyName\": \"Kenyan Shilling\",\n    \"countryFlag\": \"http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Kenya.jpg\",\n    \"createdAt\": \"2024-01-01T10:00:00\",\n    \"updatedAt\": \"2024-01-01T10:00:00\"\n  }\n}"
+            },
+            {
+              "name": "400 - Blank Name",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"data\": {\n    \"name\": \"Country name must not be blank\"\n  }\n}"
+            },
+            {
+              "name": "409 - Duplicate Country",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Country with ISO code 'KE' already exists.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Fetch and Save Country - Lowercase",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"tanzania\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries"]
+            },
+            "description": "Tests sentence case conversion - 'tanzania' should be saved as 'Tanzania'."
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch and Save Country - Blank Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries"]
+            },
+            "description": "Should return 400 validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Countries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries"]
+            },
+            "description": "Returns all saved countries."
+          },
+          "response": [
+            {
+              "name": "200 - All Countries",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Retrieved 2 countries\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"countryName\": \"Kenya\",\n      \"isoCode\": \"KE\",\n      \"capitalCity\": \"Nairobi\",\n      \"phoneCode\": \"254\",\n      \"continentCode\": \"AF\",\n      \"currencyIsoCode\": \"KES\",\n      \"currencyName\": \"Kenyan Shilling\",\n      \"countryFlag\": \"http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Kenya.jpg\",\n      \"createdAt\": \"2024-01-01T10:00:00\",\n      \"updatedAt\": \"2024-01-01T10:00:00\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Country By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "1"]
+            },
+            "description": "Returns a single country by its database ID."
+          },
+          "response": [
+            {
+              "name": "200 - Country Found",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Country found\",\n  \"data\": {\n    \"id\": 1,\n    \"countryName\": \"Kenya\",\n    \"isoCode\": \"KE\",\n    \"capitalCity\": \"Nairobi\",\n    \"phoneCode\": \"254\",\n    \"continentCode\": \"AF\",\n    \"currencyIsoCode\": \"KES\",\n    \"currencyName\": \"Kenyan Shilling\",\n    \"countryFlag\": \"http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Kenya.jpg\",\n    \"createdAt\": \"2024-01-01T10:00:00\",\n    \"updatedAt\": \"2024-01-01T10:00:00\"\n  }\n}"
+            },
+            {
+              "name": "404 - Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Country not found with id: 1\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Country By ID - Not Found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "999"]
+            },
+            "description": "Should return 404 for a non-existent ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Country",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capitalCity\": \"Mombasa\",\n  \"phoneCode\": \"254\",\n  \"currencyName\": \"KES Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "1"]
+            },
+            "description": "Updates only the fields provided. Null fields are ignored."
+          },
+          "response": [
+            {
+              "name": "200 - Country Updated",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Country updated successfully\",\n  \"data\": {\n    \"id\": 1,\n    \"countryName\": \"Kenya\",\n    \"isoCode\": \"KE\",\n    \"capitalCity\": \"Mombasa\",\n    \"phoneCode\": \"254\",\n    \"continentCode\": \"AF\",\n    \"currencyIsoCode\": \"KES\",\n    \"currencyName\": \"KES Updated\",\n    \"countryFlag\": \"http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Kenya.jpg\",\n    \"createdAt\": \"2024-01-01T10:00:00\",\n    \"updatedAt\": \"2024-01-01T10:05:00\"\n  }\n}"
+            },
+            {
+              "name": "404 - Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Country not found with id: 1\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Country - Not Found",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capitalCity\": \"Mombasa\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "999"]
+            },
+            "description": "Should return 404 for a non-existent ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Country",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "1"]
+            },
+            "description": "Deletes a country by ID."
+          },
+          "response": [
+            {
+              "name": "200 - Country Deleted",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Country deleted successfully\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "404 - Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Country not found with id: 1\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Country - Not Found",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "999"]
+            },
+            "description": "Should return 404 for a non-existent ID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            },
+            "description": "Spring Boot Actuator health endpoint."
+          },
+          "response": [
+            {
+              "name": "200 - Healthy",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"status\": \"UP\",\n  \"components\": {\n    \"db\": { \"status\": \"UP\" },\n    \"diskSpace\": { \"status\": \"UP\" },\n    \"ping\": { \"status\": \"UP\" }\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

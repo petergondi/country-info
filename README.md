@@ -1,6 +1,6 @@
 # Country Info Service
 
-Channel Developer Case Study — A Spring Boot REST API that integrates with a SOAP web service to fetch, store, and manage country information.
+NCBA Channel Developer Case Study — A Spring Boot REST API that integrates with a SOAP web service to fetch, store, and manage country information.
 
 ---
 
@@ -145,7 +145,12 @@ mvn spring-boot:run
 
 Import and test all endpoints using the Postman collection:
 
-[View Postman Collection](https://interstellar-sunset-5393.postman.co/workspace/My-Workspace~92bac59b-955b-47ba-88ed-fd49b310c73b/collection/4932219-8a258a19-c392-4a15-92ef-831b9b3da608?action=share&creator=4932219)
+Import the `CountryService.postman_collection.json` file found in the root of this repository into Postman:
+
+1. Open Postman
+2. Click **Import**
+3. Select `CountryService.postman_collection.json`
+4. The collection will appear with all endpoints ready to use
 
 ---
 
