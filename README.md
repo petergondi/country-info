@@ -1,6 +1,6 @@
 # Country Info Service
 
-NCBA Channel Developer Case Study — A Spring Boot REST API that integrates with a SOAP web service to fetch, store, and manage country information.
+Channel Developer Case Study — A Spring Boot REST API that integrates with a SOAP web service to fetch, store, and manage country information.
 
 ---
 
@@ -133,12 +133,6 @@ management.endpoint.health.show-details=always
 
 > **Note:** `application.properties` is excluded from version control via `.gitignore`. You must create it manually every time you clone the repository.
 
-Or pass as environment variables:
-```bash
-export DB_USERNAME=appuser
-export DB_PASSWORD=apppassword
-```
-
 ### 3. Build and run
 ```bash
 mvn clean install
@@ -147,16 +141,28 @@ mvn spring-boot:run
 
 ---
 
+## Postman Collection
+
+Import and test all endpoints using the Postman collection:
+
+[View Postman Collection](https://interstellar-sunset-5393.postman.co/workspace/My-Workspace~92bac59b-955b-47ba-88ed-fd49b310c73b/collection/4932219-8a258a19-c392-4a15-92ef-831b9b3da608?action=share&creator=4932219)
+
+---
+
 ## API Reference
 
 Base URL: `http://localhost:8080/api/countries`
 
+---
+
 ### POST `/api/countries`
-Fetch country info from SOAP and persist it.
+Fetches country info from the SOAP API and persists it. Converts the name to sentence case automatically.
 
 **Request:**
 ```json
-{ "name": "Tanzania" }
+{
+  "name": "kenya"
+}
 ```
 
 **Response (201 Created):**
@@ -166,17 +172,36 @@ Fetch country info from SOAP and persist it.
   "message": "Country fetched and saved successfully",
   "data": {
     "id": 1,
-    "countryName": "Tanzania",
-    "isoCode": "TZ",
-    "capitalCity": "Dodoma",
-    "phoneCode": "255",
+    "countryName": "Kenya",
+    "isoCode": "KE",
+    "capitalCity": "Nairobi",
+    "phoneCode": "254",
     "continentCode": "AF",
-    "currencyIsoCode": "TZS",
-    "currencyName": "Tanzanian Shilling",
-    "countryFlag": "...",
+    "currencyIsoCode": "KES",
+    "currencyName": "Kenyan Shilling",
+    "countryFlag": "http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Kenya.jpg",
     "createdAt": "2024-01-01T10:00:00",
     "updatedAt": "2024-01-01T10:00:00"
   }
+}
+```
+
+**Response (400 Bad Request):**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "data": {
+    "name": "Country name must not be blank"
+  }
+}
+```
+
+**Response (409 Conflict):**
+```json
+{
+  "success": false,
+  "message": "Country with ISO code 'KE' already exists."
 }
 ```
 
@@ -185,8 +210,40 @@ Fetch country info from SOAP and persist it.
 ### GET `/api/countries`
 Fetch all saved countries.
 
-```bash
-curl http://localhost:8080/api/countries
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Retrieved 2 countries",
+  "data": [
+    {
+      "id": 1,
+      "countryName": "Kenya",
+      "isoCode": "KE",
+      "capitalCity": "Nairobi",
+      "phoneCode": "254",
+      "continentCode": "AF",
+      "currencyIsoCode": "KES",
+      "currencyName": "Kenyan Shilling",
+      "countryFlag": "http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Kenya.jpg",
+      "createdAt": "2024-01-01T10:00:00",
+      "updatedAt": "2024-01-01T10:00:00"
+    },
+    {
+      "id": 2,
+      "countryName": "Tanzania",
+      "isoCode": "TZ",
+      "capitalCity": "Dodoma",
+      "phoneCode": "255",
+      "continentCode": "AF",
+      "currencyIsoCode": "TZS",
+      "currencyName": "Tanzanian Shilling",
+      "countryFlag": "http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Tanzania.jpg",
+      "createdAt": "2024-01-01T10:01:00",
+      "updatedAt": "2024-01-01T10:01:00"
+    }
+  ]
+}
 ```
 
 ---
@@ -194,19 +251,75 @@ curl http://localhost:8080/api/countries
 ### GET `/api/countries/{id}`
 Fetch a specific country by ID.
 
-```bash
-curl http://localhost:8080/api/countries/1
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Country found",
+  "data": {
+    "id": 1,
+    "countryName": "Kenya",
+    "isoCode": "KE",
+    "capitalCity": "Nairobi",
+    "phoneCode": "254",
+    "continentCode": "AF",
+    "currencyIsoCode": "KES",
+    "currencyName": "Kenyan Shilling",
+    "countryFlag": "http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Kenya.jpg",
+    "createdAt": "2024-01-01T10:00:00",
+    "updatedAt": "2024-01-01T10:00:00"
+  }
+}
+```
+
+**Response (404 Not Found):**
+```json
+{
+  "success": false,
+  "message": "Country not found with id: 999"
+}
 ```
 
 ---
 
 ### PUT `/api/countries/{id}`
-Update a country record.
+Update a country record. Only provided fields are updated — null fields are ignored.
 
-```bash
-curl -X PUT http://localhost:8080/api/countries/1 \
-  -H "Content-Type: application/json" \
-  -d '{ "capitalCity": "Dodoma", "currencyName": "TZS" }'
+**Request:**
+```json
+{
+  "capitalCity": "Mombasa",
+  "currencyName": "KES Updated"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Country updated successfully",
+  "data": {
+    "id": 1,
+    "countryName": "Kenya",
+    "isoCode": "KE",
+    "capitalCity": "Mombasa",
+    "phoneCode": "254",
+    "continentCode": "AF",
+    "currencyIsoCode": "KES",
+    "currencyName": "KES Updated",
+    "countryFlag": "http://www.oorsprong.org/WebSamples.CountryInfo/Flags/Kenya.jpg",
+    "createdAt": "2024-01-01T10:00:00",
+    "updatedAt": "2024-01-01T10:05:00"
+  }
+}
+```
+
+**Response (404 Not Found):**
+```json
+{
+  "success": false,
+  "message": "Country not found with id: 999"
+}
 ```
 
 ---
@@ -214,8 +327,21 @@ curl -X PUT http://localhost:8080/api/countries/1 \
 ### DELETE `/api/countries/{id}`
 Delete a country record.
 
-```bash
-curl -X DELETE http://localhost:8080/api/countries/1
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Country deleted successfully",
+  "data": null
+}
+```
+
+**Response (404 Not Found):**
+```json
+{
+  "success": false,
+  "message": "Country not found with id: 999"
+}
 ```
 
 ---
@@ -293,14 +419,15 @@ country-service/
 ├── src/
 │   ├── main/java/com/ncba/countryservice/
 │   │   ├── controller/        # REST endpoints
-│   │   ├── service/           # Business logic + SOAP client
+│   │   ├── service/           # Business logic + SOAP client interface + impl
 │   │   ├── repository/        # Spring Data JPA
 │   │   ├── model/             # JPA entity
 │   │   ├── dto/               # Request/Response DTOs
 │   │   ├── exception/         # Custom exceptions + global handler
 │   │   └── config/            # SOAP/marshaller config
 │   └── resources/
-│       └── application.properties
+│       ├── application.properties.template  ← committed to git
+│       └── application.properties           ← NOT committed (create manually)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── .env.example
@@ -313,7 +440,7 @@ country-service/
 
 WSDL: `http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL`
 
-| Operation          | Input          | Output                  |
-|--------------------|----------------|-------------------------|
-| `CountryISOCode`   | `sCountryName` | `CountryISOCodeResult`  |
-| `FullCountryInfo`  | `sCountryISOCode` | Full country object  |
+| Operation          | Input             | Output                 |
+|--------------------|-------------------|------------------------|
+| `CountryISOCode`   | `sCountryName`    | `CountryISOCodeResult` |
+| `FullCountryInfo`  | `sCountryISOCode` | Full country object    |
