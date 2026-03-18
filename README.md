@@ -431,7 +431,7 @@ country-service/
 │   │   ├── exception/         # Custom exceptions + global handler
 │   │   └── config/            # SOAP/marshaller config
 │   └── resources/
-│  
+│       ├── application.properties.template  ← committed to git
 │       └── application.properties           ← NOT committed (create manually)
 ├── Dockerfile
 ├── docker-compose.yml
@@ -449,3 +449,59 @@ WSDL: `http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoServic
 |--------------------|-------------------|------------------------|
 | `CountryISOCode`   | `sCountryName`    | `CountryISOCodeResult` |
 | `FullCountryInfo`  | `sCountryISOCode` | Full country object    |
+
+---
+
+## ⚠️ Important — Future Improvements
+
+> **Note:** The improvements described in this section are critical for production readiness. They were intentionally left out of scope for this implementation but should be addressed before any production deployment.
+
+### Caching with Redis
+
+The current implementation makes 2 live SOAP calls on every new country request — one to fetch the ISO code and one to fetch the full country info. Additionally, when a country already exists in the database, the original implementation queried the database twice for the same record. Both of these issues have been addressed:
+
+- **Double DB call** — fixed by storing the result of `findByCountryNameIgnoreCase` in an `Optional` and reusing it, eliminating the redundant second query.
+- **Repeated SOAP calls** — for subsequent requests for a country not yet in the database, the SOAP service is still called every time. In a production environment this introduces latency and a hard dependency on the external SOAP service availability.
+
+The recommended next improvement is to introduce Redis caching using Spring Cache so that SOAP responses are stored after the first call and reused on subsequent requests without hitting the external service again.
+
+**How it would work:**
+
+```
+POST /api/countries { "name": "Kenya" }
+        │
+        ▼
+  Check DB (single query) → already saved? → return immediately (no SOAP)
+        │
+        ▼ (first time only)
+  Check Redis → ISO code cached? → skip SOAP call 1
+        │
+        ▼ (cache miss only)
+  SOAP: CountryISOCode("Kenya") → "KE" → store in Redis (TTL 24h)
+        │
+        ▼
+  Check Redis → full info cached? → skip SOAP call 2
+        │
+        ▼ (cache miss only)
+  SOAP: FullCountryInfo("KE") → store in Redis (TTL 24h)
+        │
+        ▼
+  Save to DB → return response
+```
+
+**Key annotations that would be added to `SoapClientServiceImpl`:**
+
+```java
+@Cacheable(value = "isoCode", key = "#countryName")
+public String getCountryIsoCode(String countryName) { ... }
+
+@Cacheable(value = "countryInfo", key = "#isoCode")
+public Map<String, String> getFullCountryInfo(String isoCode) { ... }
+```
+
+**Why Redis over simple in-memory cache:**
+
+| Option | Issue |
+|---|---|
+| In-memory cache | Lost on restart, not shared across multiple app instances |
+| Redis | Persists across restarts, shared across all instances if scaled horizontally |
