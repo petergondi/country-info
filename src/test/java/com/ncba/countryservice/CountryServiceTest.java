@@ -85,6 +85,36 @@ class CountryServiceTest {
     }
 
     @Test
+    void updateCountry_shouldUpdateProvidedFields() {
+        when(repository.findById(1L)).thenReturn(Optional.of(sampleCountry));
+        when(repository.save(any())).thenReturn(sampleCountry);
+
+        CountryUpdateRequest request = new CountryUpdateRequest();
+        request.setCapitalCity("Mombasa");
+        request.setCurrencyName("KES Updated");
+
+        CountryResponse result = countryService.updateCountry(1L, request);
+
+        assertThat(result).isNotNull();
+        verify(repository).save(argThat(c ->
+                "Mombasa".equals(c.getCapitalCity()) &&
+                        "KES Updated".equals(c.getCurrencyName())
+        ));
+    }
+
+    @Test
+    void updateCountry_shouldThrowWhenNotFound() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        CountryUpdateRequest request = new CountryUpdateRequest();
+        request.setCapitalCity("Mombasa");
+
+        assertThatThrownBy(() -> countryService.updateCountry(99L, request))
+                .isInstanceOf(CountryNotFoundException.class)
+                .hasMessageContaining("99");
+    }
+
+    @Test
     void deleteCountry_shouldThrowWhenNotFound() {
         when(repository.existsById(99L)).thenReturn(false);
         assertThatThrownBy(() -> countryService.deleteCountry(99L))
