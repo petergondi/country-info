@@ -38,7 +38,7 @@ class CountryServiceTest {
                 .continentCode("AF")
                 .currencyIsoCode("KES")
                 .currencyName("Kenyan Shilling")
-                .countryFlag("")
+                .countryFlag("https://example.com/ke.png")
                 .build();
     }
 
