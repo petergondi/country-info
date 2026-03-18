@@ -1,0 +1,32 @@
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+### Spring Boot ###
+*.jar
+*.war
+*.ear
+
+### Environment ###
+.env
+
+### Logs ###
+logs/
+*.log
+
+### IDE ###
+.idea/
+*.iml
+.vscode/
+*.class
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Config ###
+src/main/resources/application.properties
