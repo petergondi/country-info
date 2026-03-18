@@ -2,6 +2,7 @@ package com.ncba.countryservice.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.w3c.dom.*;
@@ -16,8 +17,8 @@ import java.util.Map;
 public class SoapClientServiceImpl extends WebServiceGatewaySupport implements SoapClientService {
 
     private static final Logger log = LoggerFactory.getLogger(SoapClientService.class);
-    private static final String NAMESPACE = "http://www.oorsprong.org/websamples.countryinfo";
-
+    @Value("${soap.namespace}")
+    private String namespace;
     public String getCountryIsoCode(String countryName) {
         log.info("Calling SOAP: CountryISOCode for country: {}", countryName);
         try {
@@ -63,8 +64,8 @@ public class SoapClientServiceImpl extends WebServiceGatewaySupport implements S
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.newDocument();
-        Element root = doc.createElementNS(NAMESPACE, operation);
-        Element param = doc.createElementNS(NAMESPACE, paramName);
+        Element root = doc.createElementNS(namespace, operation);
+        Element param = doc.createElementNS(namespace, paramName);
         param.setTextContent(paramValue);
         root.appendChild(param);
         doc.appendChild(root);

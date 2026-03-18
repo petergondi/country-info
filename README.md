@@ -116,8 +116,10 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 spring.jpa.properties.hibernate.format_sql=true
 
 # SOAP
-soap.wsdl.url=http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL
+# WSDL reference URL (not used in code - for documentation only)
+# soap.wsdl.url=http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL
 soap.endpoint.url=http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso
+soap.namespace=http://www.oorsprong.org/websamples.countryinfo
 
 # Logging
 logging.level.com.ncba.countryservice=DEBUG
